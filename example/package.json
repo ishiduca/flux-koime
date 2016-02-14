@@ -1,0 +1,20 @@
+{
+  "main": "index",
+  "scripts": {
+    "ecstatic": "node ./node_modules/ecstatic/lib/ecstatic -p 3030 ./public",
+    "build": "browserify -t [babelify --presets [ react ] ] src/main.js -o public/bundle.js"
+  },
+  "devDependencies": {
+    "babel-preset-react": "^6.5.0",
+    "babelify": "^7.2.0",
+    "ecstatic": "^1.4.0"
+  },
+  "dependencies": {
+    "clone": "^1.0.2",
+    "flux-koime": "file:..",
+    "hyperquest": "^1.2.0",
+    "inherits": "^2.0.1",
+    "react": "^0.14.7",
+    "react-dom": "^0.14.7"
+  }
+}

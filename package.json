@@ -1,0 +1,36 @@
+{
+  "name": "flux-koime",
+  "version": "0.0.9",
+  "description": "",
+  "main": "./index.js",
+  "scripts": {
+    "test": "tape t/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ishiduca/flux-koime.git"
+  },
+  "keywords": [
+    "flux"
+  ],
+  "author": "ishiduca@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ishiduca/flux-koime/issues"
+  },
+  "homepage": "https://github.com/ishiduca/flux-koime#readme",
+  "dependencies": {
+    "defined": "^1.0.0",
+    "inherits": "^2.0.1",
+    "readable-stream": "^2.0.5",
+    "xtend": "^4.0.1"
+  },
+  "devDependencies": {
+    "babel-preset-react": "^6.5.0",
+    "babelify": "^7.2.0",
+    "clone": "^1.0.2",
+    "ecstatic": "^1.4.0",
+    "tape": "^4.4.0",
+    "through2": "^2.0.1"
+  }
+}

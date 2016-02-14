@@ -1,0 +1,10 @@
+node_modules/
+*.swp
+*~
+npm-debug.log
+.DS_Store
+.git*
+.npmignore
+example/node_modules/
+example/npm-debug.log
+example/public/bundle.js
