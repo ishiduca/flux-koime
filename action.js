@@ -5,10 +5,10 @@ var xtend    = require('xtend')
 inherits(Action, stream.Readable)
 module.exports = Action
 
-function Action (name, method) {
+function Action (label, method) {
     stream.Readable.call(this, {objectMode: true})
     this.defaultPayload = {
-        name: name
+        label: label
       , method: method
     }
 }
@@ -16,7 +16,7 @@ function Action (name, method) {
 Action.prototype._read = function () {}
 
 Action.prototype.errorPayload = {
-    name: 'Error'
+    label: 'Error'
   , method: 'error'
 }
 

@@ -6,7 +6,7 @@ var ActTodo = require('./lib/action-todo')
 
 var stream = require('readable-stream')
 
-test('var act = new Action(name, method)', (t) => {
+test('var act = new Action(label, method)', (t) => {
     var act = new Action('foo', 'getValue')
     act.say = function (hello) {
         if (hello instanceof Error) return this.error(hello)
@@ -21,10 +21,10 @@ test('var act = new Action(name, method)', (t) => {
     .once('end', () => {
         t.ok(1, 'act ended')
         t.is(spy.length, 2, 'spy.length === 2')
-        t.deepEqual(spy[0], {name: 'foo', method: 'getValue', value: 'HELLO'}
-          , "spy[0] deepEqual {name: 'foo', method: 'getValue', value: 'HELLO'}")
-        t.deepEqual(spy[1], {name: 'Error', method: 'error', value: new Error('hoge')}
-          , "spy[1] deepEqual {name: 'Error', method: 'error', value: new Error('hoge')}")
+        t.deepEqual(spy[0], {label: 'foo', method: 'getValue', value: 'HELLO'}
+          , "spy[0] deepEqual {label: 'foo', method: 'getValue', value: 'HELLO'}")
+        t.deepEqual(spy[1], {label: 'Error', method: 'error', value: new Error('hoge')}
+          , "spy[1] deepEqual {label: 'Error', method: 'error', value: new Error('hoge')}")
         t.end()
     })
 
@@ -53,10 +53,10 @@ test('var actTodo = new ActTodo(API) # custom action creator', (t) => {
     .once('end', () => {
         t.ok(1, 'actTodo ended')
         t.is(spy.length, 2, 'spy.length === 2')
-        t.deepEqual(spy[0], {name: 'Todo', method: 'getList', value: {key: 'beep%20boop', value: 'beep boop'}}
-          , "spy[0] deepEqual {name: 'Todo', method: 'getList', value: {key: 'beep%20boop', value: 'beep boop'}}")
-        t.deepEqual(spy[1], {name: 'Error', method: 'error', value: new Error('"key" not found')}
-          , "spy[1] deepEqual {name: 'Error', method: 'error', value: new Error('\"key\" not found')}")
+        t.deepEqual(spy[0], {label: 'Todo', method: 'getList', value: {key: 'beep%20boop', value: 'beep boop'}}
+          , "spy[0] deepEqual {label: 'Todo', method: 'getList', value: {key: 'beep%20boop', value: 'beep boop'}}")
+        t.deepEqual(spy[1], {label: 'Error', method: 'error', value: new Error('"key" not found')}
+          , "spy[1] deepEqual {label: 'Error', method: 'error', value: new Error('\"key\" not found')}")
         t.end()
     })
 

@@ -11,7 +11,6 @@ var App = React.createClass({
                     load &quot;TIMTOWTDI&quot;
                 </button>
                 <button
-                    ref="load_txt"
                     value="data/the-zen-of-python"
                     onClick={this.handleClick}
                 >

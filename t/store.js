@@ -3,7 +3,7 @@ var test = require('tape')
 var clone = require('clone')
 var Store = require('../store')
 
-test('var store = new Store(name)', (t) => {
+test('var store = new Store(label)', (t) => {
     var store = new Store('Foo')
     store.list = []
 
@@ -27,9 +27,9 @@ test('var store = new Store(name)', (t) => {
         t.end()
     })
 
-    store.write({name: 'Foo', method: 'getList', value: 'abc'})
-    store.write({name: 'Foo', method: 'getList', value: 'def'})
-    store.write({name: 'Foo', method: 'getList', value: 'ghi'})
-    store.write({nmee: 'Foo', method: 'notExistsMethod', value: 'xyz'})
+    store.write({label: 'Foo', method: 'getList', value: 'abc'})
+    store.write({label: 'Foo', method: 'getList', value: 'def'})
+    store.write({label: 'Foo', method: 'getList', value: 'ghi'})
+    store.write({label: 'Foo', method: 'notExistsMethod', value: 'xyz'})
     store.end()
 })
