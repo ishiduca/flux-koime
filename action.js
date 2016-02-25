@@ -7,6 +7,8 @@ module.exports = Action
 
 function Action (label, method) {
     stream.Readable.call(this, {objectMode: true})
+    this.label  = label
+    this.method = method
     this.defaultPayload = {
         label: label
       , method: method
