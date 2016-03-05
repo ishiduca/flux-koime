@@ -6,6 +6,7 @@ module.exports = Dispatcher
 
 function Dispatcher () {
     stream.Transform.call(this, {objectMode: true})
+    this.setMaxListeners(0)
 }
 
 Dispatcher.prototype._transform = function (payload, enc, done) {
