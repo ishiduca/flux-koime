@@ -6,8 +6,7 @@ module.exports = function (actions_and_stores) {
     var context    = {}
     var dispatcher = new Dispatcher
 
-    dispatcher.setMaxListeners(0)
-    dispatcher.on('unpipe', function (action) { action.pipe(this) })
+    dispatcher.on('unpipe', function (action) { action.pipe(this, {end: false}) })
 
     defined(actions_and_stores.actions, []).forEach(function (action) {
         action.pipe(dispatcher, {end: false})
@@ -15,7 +14,7 @@ module.exports = function (actions_and_stores) {
     })
 
     defined(actions_and_stores.stores, []).forEach(function (store) {
-        dispatcher.pipe(store, {end: false}).on('unpipe', function (_dispatcher) { _dispatcher.pipe(this) })
+        dispatcher.pipe(store, {end: false}).on('unpipe', function (_dispatcher) { _dispatcher.pipe(this, {end: false}) })
         ;(context.stores || (context.stores = [])).push(store)
     })
 
