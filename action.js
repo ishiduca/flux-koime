@@ -1,31 +1,29 @@
 var stream   = require('readable-stream')
 var inherits = require('inherits')
 var xtend    = require('xtend')
+var mutable  = require('xtend/mutable')
 
 inherits(Action, stream.Readable)
 module.exports = Action
 
-function Action (label, method) {
+function Action (label, _opt, _role) {
+    if (!(this instanceof Action)) return new Action(label, _opt, _role)
     stream.Readable.call(this, {objectMode: true})
-    this.label  = label
-    this.method = method
-    this.defaultPayload = {
-        label: label
-      , method: method
-    }
+    this.label = label
+    this.opt   = xtend(_opt)
+    _role && mutable(this, _role)
 }
 
 Action.prototype._read = function () {}
 
-Action.prototype.errorPayload = {
-    label: 'Error'
-  , method: 'error'
-}
-
-Action.prototype.push = function (value) {
-    stream.Readable.prototype.push.apply(this, [xtend(this.defaultPayload, {value: value})])
+Action.prototype.push = function (method, value) {
+    return stream.Readable.prototype.push.apply(this, [{
+        label: this.label
+      , method: method
+      , value: value
+    }])
 }
 
 Action.prototype.error = function (err) {
-    stream.Readable.prototype.push.apply(this, [xtend(this.errorPayload, {value: err})])
+    return this.emit('error', err)
 }

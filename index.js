@@ -1,22 +1,36 @@
-var defined    = require('defined')
 var Dispatcher = require('./_dispatcher')
 
-module.exports = function (actions_and_stores) {
-    actions_and_stores || (actions_and_stores = {})
-    var context    = {}
-    var dispatcher = new Dispatcher
+var slice = Array.prototype.slice
 
-    dispatcher.on('unpipe', function (action) { action.pipe(this, {end: false}) })
+module.exports = function () {
+    var actions = slice.apply(arguments)
 
-    defined(actions_and_stores.actions, []).forEach(function (action) {
-        action.pipe(dispatcher, {end: false})
-        ;(context.actions || (context.actions = [])).push(action)
-    })
+    return function () {
+        var stores     = slice.apply(arguments)
+        var dispatcher = Dispatcher()
 
-    defined(actions_and_stores.stores, []).forEach(function (store) {
-        dispatcher.pipe(store, {end: false}).on('unpipe', function (_dispatcher) { _dispatcher.pipe(this, {end: false}) })
-        ;(context.stores || (context.stores = [])).push(store)
-    })
+        actions.forEach(function (action) {
+            action.pipe(dispatcher, {end: false})
+        })
 
-    return context
+        dispatcher.on('unpipe', function (action) {
+            action._readableState.pipes || action.pipe(dispatcher, {end: false})
+        })
+
+        stores.forEach(function (store) {
+            dispatcher.pipe(store, {end: false}).on('unpipe', function (dsptchr) {
+                dsptchr.pipe(this, {end: false})
+            })
+        })
+
+        return function (onError) {
+            dispatcher.on('error', onError)
+            actions.forEach(function (action) {
+                action.on('error', onError)
+            })
+            stores.forEach(function (store) {
+                store.on('error', onError)
+            })
+        }
+    }
 }

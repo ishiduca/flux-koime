@@ -66,9 +66,12 @@ var StoreTodo  = require('./stores/todolist')
 var storeTodo  = new StoreTodo
 
 // actions pipe dispatchr pipe stores
-require('flux-koime')({
-    actions: [actionTodo]
-  , stores:  [storeTodo]
+require('flux-koime')(
+    actionTodo
+)(
+    storeTodo
+)(function onError (err) {
+    console.error(err)
 })
 
 ReatDOM.render(
@@ -90,8 +93,7 @@ module.exports = ActionTodo
 
 function ActionTodo (storageAPI) {
     // "Todo" is "label", required
-    // "getTodos" is "method name", required
-    Action.call(this, 'Todo', 'getTodos')
+    Action.call(this, 'Todo')
     this.api = storageAPI
 }
 
@@ -109,8 +111,9 @@ ActionTodo.prototype.getList = function () {
             buf.push(data.value)
         })
         .once('end', function () {
-            this.push(buf) // Action.prototype provides `.push` mehod
-                           // emit("data", {label: "Todo", method: "getTodos", value: buf})
+            // Action.prototype provides `.push` mehod
+            // emit("data", {label: "Todo", method: "getTodos", value: buf})
+            this.push('getTodos', buf)
         }.bind(this))
         .on('error', this.error.bind(this))
 }

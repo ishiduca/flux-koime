@@ -3,7 +3,7 @@ var test = require('tape')
 var Dispatcher = require('../_dispatcher')
 
 test('var dispatcher = new Dispatcher', (t) => {
-    var dispatcher = new Dispatcher
+    var dispatcher = Dispatcher()
     dispatcher.once('data', (payload) => {
         t.ok(payload, 'dispatcher.on("data", (payload) => {})')
         t.deepEqual(payload, {label: 'foo', method: 'getValue', value: 'FOO'}

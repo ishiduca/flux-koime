@@ -4,8 +4,10 @@ var inherits = require('inherits')
 inherits(ActTodo, Action)
 module.exports = ActTodo
 
+var getTodo = 'getTodo'
+
 function ActTodo (storageAPI) {
-    Action.call(this, 'Todo', 'getList')
+    Action.call(this, 'Todo')
     this.storage = storageAPI
 }
 
@@ -14,6 +16,6 @@ ActTodo.prototype.addTodo = function (todo) {
     var key = encodeURIComponent(todo)
     this.storage.put(key, todo, function (err) {
         err ? me.error(err)
-            : me.push({key: key, value: todo})
+            : me.push(getTodo, {key: key, value: todo})
     })
 }

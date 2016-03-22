@@ -5,8 +5,10 @@ var Action     = require('flux-koime/action')
 inherits(ActHyperquest, Action)
 module.exports = ActHyperquest
 
+var getData = 'getData'
+
 function ActHyperquest () {
-    Action.call(this, 'Result', 'getData')
+    Action.call(this, 'Result')
 }
 
 ActHyperquest.prototype.load = function (uri) {
@@ -19,6 +21,6 @@ ActHyperquest.prototype.load = function (uri) {
         })
         .once('end', function () {
             var str = Buffer.isBuffer(buf[0]) ? String(Buffer.concat(buf)) : buf.join('')
-            me.push(str)
+            me.push(getData, str)
         })
 }

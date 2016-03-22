@@ -1,6 +1,6 @@
 {
   "name": "flux-koime",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "library that implements the Flux architecture in Nodejs Stream",
   "main": "./index.js",
   "scripts": {

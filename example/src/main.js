@@ -8,11 +8,8 @@ var actHyper = new ActHyperquest
 var StoreResult = require('./stores/result')
 var storeResult = new StoreResult
 
-var koime = require('flux-koime')
-
-koime({
-    actions: [actHyper]
-  , stores:  [storeResult]
+require('flux-koime')(actHyper)(storeResult)(function onError (err) {
+    console.error(err)
 })
 
 ReactDOM.render(

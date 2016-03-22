@@ -5,6 +5,7 @@ inherits(Dispatcher, stream.Transform)
 module.exports = Dispatcher
 
 function Dispatcher () {
+    if (!(this instanceof Dispatcher)) return new Dispatcher()
     stream.Transform.call(this, {objectMode: true})
     this.setMaxListeners(0)
 }
