@@ -19,7 +19,7 @@ Store.prototype._transform = function (payload, enc, _done) {
     if (this.label === payload.label && 'function' === typeof this[payload.method])
         this[payload.method](payload.value, done)
     else
-        done()
+        _done()
 
     function done (err, data) {
         if (err) me.emit('error', err)
