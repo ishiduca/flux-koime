@@ -12,7 +12,8 @@ User --> Action-(pipe)->[Dispatcher]-(pipe)->Store -(emit "data" event)-> Compon
 
 ## usage
 
-```js:main.js
+maiin.js
+```js
 var React    = require('react')
 var ReactDOM = require('react-dom')
 var action   = require('flux-koime/action')
@@ -36,7 +37,8 @@ ReactDOM.render(<App context={{
 }}, document.querySelector('#react-app'))
 ```
 
-```js:action-tap.js
+action-tap.js
+```js
 var method = 'sum'
 module.exports = {
     _tap: function (n) {
@@ -51,7 +53,8 @@ module.exports = {
 }
 ```
 
-```js:store-tap.js
+store-tap.js
+```js
 module.exports = {
     sum: function (n, done) {
         this.opt.store.put(n)
@@ -63,7 +66,8 @@ module.exports = {
 }
 ```
 
-```js:api-tap.js
+api-tap.js
+```js
 module.exports = {
     _buff: []
   , put: function (n) {
@@ -77,7 +81,8 @@ module.exports = {
 }
 ```
 
-```js:component-app.js
+component-app.js
+```js
 var React = require('react')
 var App = React.createClass({
     render: function () {
@@ -111,6 +116,7 @@ var App = React.createClass({
     }
 })
 module.exports = App
+```
 
 ## api
 
@@ -158,6 +164,7 @@ SomeStore.prototype.getDate = function (_data, callback) {
 
 ### var setActionsFunc = require('flux-koime')
 
+```js
 var setActions  = require('flux-koime')
 var doPipe      = setActions(action1, action2, ...)
 var handleError = doPipe(store1, store2, ...)
@@ -165,6 +172,7 @@ var handleError = doPipe(store1, store2, ...)
 handleError(function (err) {
     ...
 })
+```
 
 ### author
 
