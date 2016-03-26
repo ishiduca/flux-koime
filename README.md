@@ -12,135 +12,159 @@ User --> Action-(pipe)->[Dispatcher]-(pipe)->Store -(emit "data" event)-> Compon
 
 ## usage
 
-```js
+```js:main.js
 var React    = require('react')
 var ReactDOM = require('react-dom')
-
-var App = React.createClass({
-    render: function () {
-        return (
-            <section>
-                <form onSubmit={this.handleSubmit}>
-                    <input
-                        type="text"
-                        ref="todoText"
-                        placeholder="input todo"
-                        required
-                    />
-                </form>
-                <ul>
-                    {this.state.todos.map(map)}
-                </ul>
-            </section>
-        )
-        function map (todo, i) {
-            return (<li key={i}>{todo}<li>)
-        }
-    }
-  , handleSubmit: function (ev) {
-        ev.preventDefault()
-        this.props.context.actionTodo.addTodo(this.refs.todoText.value)
-    }
-  , getInitialState: function () {
-        return {todos: []}
-    }
-  , componentDidMount: function () {
-        var c = this.props.context
-        c.storeTodo.on('data', function (todos) {
-            this.setState({todos: todos})
-        }.bind(this))
-        c.actionTodo.getList()
-    }
-})
-
-// api
-var levelup = require('levelup')
-var storageAPI = levelup('TodoList', {
-    db: require('localstorage-down')
-})
-// actions
-var ActionTodo = require('./actions/todolist')
-var actionTodo = new ActionTodo(storageAPI)
-// stores
-var StoreTodo  = require('./stores/todolist')
-var storeTodo  = new StoreTodo
-
-// actions pipe dispatchr pipe stores
-require('flux-koime')(
-    actionTodo
-)(
-    storeTodo
-)(function onError (err) {
+var action   = require('flux-koime/action')
+var store    = require('flux-koime/store')
+var pipes    = require('flux-koime')
+// vars
+var TAP = 'Tap'
+// actions, stores
+var actTap   = action(TAP, null, require('./action-tap')
+var storeTap = store( TAP, {store: require('./api-tap')}, require('./store-tap'))
+// pipes and handle error
+pipes(actTap)(storeTap)(function onError (err) {
     console.error(err)
 })
-
-ReatDOM.render(
-    <App context={{
-        actionTodo: actionTodo
-      , storeTodo:  storeTodo
-    }}>
-  , document.querySelector('#react-app')
-)
+// components
+var App = require('./component-app')
+// mount
+ReactDOM.render(<App context={{
+    actTap: actTap
+  , storeTap: storeTap
+}}, document.querySelector('#react-app'))
 ```
 
-```js
-// ./actions/todolist.js
-var Action = require('flux-koime/action')
-var inherits = require('inherits')
-
-inherits(ActionTodo, Action)
-module.exports = ActionTodo
-
-function ActionTodo (storageAPI) {
-    // "Todo" is "label", required
-    Action.call(this, 'Todo')
-    this.api = storageAPI
+```js:action-tap.js
+var method = 'sum'
+module.exports = {
+    _tap: function (n) {
+        this.push(method, n)
+    }
+   , plus: function () {
+        this._tap(1)
+    }
+  , minus: function () {
+        this._tap(-1)
+    }
 }
+```
 
-ActionTodo.prototype.addTodo = function (todoStr) {
-    var key = encodeURIComponent(todoStr)
-    this.api.put(key, todoStr, function (err) {
-        if (err) return this.error(err) // Action.prototype provides `.error` method
-        this.getList()                  // emit("data", {label: "Error", method: "error", value: err})
-    }.bind(this))
+```js:store-tap.js
+module.exports = {
+    sum: function (n, done) {
+        this.opt.store.put(n)
+        done(null, this.getStoreSum())
+    }
+  , getStoreSum: function () {
+        return this.opt.store.sum()
+    }
 }
-ActionTodo.prototype.getList = function () {
-    var buf = []
-    this.api.createReadStream()
-        .on('data', function (data) {
-            buf.push(data.value)
+```
+
+```js:api-tap.js
+module.exports = {
+    _buff: []
+  , put: function (n) {
+        this._buff = this._buff.concat(n)
+    }
+  , sum: function () {
+        return this._buff.reduce(function (a, b) {
+            return a + b
+        }, 0)
+    }
+}
+```
+
+```js:component-app.js
+var React = require('react')
+var App = React.createClass({
+    render: function () {
+        var tap = this.props.context.actTap
+        return (
+            <div>
+                <div>
+                    <button
+                        type="button"
+                        onClick={tap.plus.bind(tap)}
+                    >+</button>
+                    <button
+                        type="button"
+                        onClick={tap.minus.bind(tap)}
+                    >-</button>
+                </div>
+                <div>{this.state.sum}</div>
+            </div>
+        )
+    }
+  , getInitialState: function () {
+        return {sum: 'not tap yet'}
+    }
+  , componentDidMount: function () {
+        this.props.context.storeTap.on('data', function (sum) {
+            this.setState({sum: sum}
         })
-        .once('end', function () {
-            // Action.prototype provides `.push` mehod
-            // emit("data", {label: "Todo", method: "getTodos", value: buf})
-            this.push('getTodos', buf)
-        }.bind(this))
-        .on('error', this.error.bind(this))
-}
-```
+    }
+  , componentWillUnmount: function () {
+        this.props.context.storeTap.removeAllListeners()
+    }
+})
+module.exports = App
+
+## api
+
+### var Action = require('flux-koime/action')
+
+`var actionCreator = new Action(label[, {opt}, {role}])`
+
+`actionCreator` is an implementation of `stream.Readable`.
+
+* `label` - indentifier for specifying the destination to becomee store of data. it sends data to store with the same label.
+* `{opt}` - to specify the settings, resource and API to be used in this actionCreator. access to this resource in the `this.opt.xxx`.
+* `{role}` - role.
+
+#### method
+
+* `.push(method, data)`
+** `method` - specifies whether to pass the data to whitch method of destination of store. --store must implement that method.
+** `data` - data to be passed to the store.
+
+### var Store = require('flux-koime/store')
+
+`var store = new Store(label[, {opt}, {role}])`
+
+`store` is an implementation of `stream.Transform`.
+
+* `label` - see `Action`
+* '{opt}' - see `Action`
+* '{role}' - see `Action`
+
+#### method
+
+store must implement the method to receive the data to be passed from actionCreator.
 
 ```js
-// ./stores/todolist.js
-var Store    = require('flux-koime/store')
-var inherits = require('inherits')
-var clone    = require('clone')
-
-inherits(StoreTodo, Store)
-module.exports = StoreTodo
-
-function StoreTodo () {
-    // "Todo" is "label", required
-    Store.call(this, 'Todo')
-    this.todos = []
-}
-
-StoreTodo.prototype.getTodos = function (todos, done) {
-    // 1st argument is recieved data from action
-    // 2nd argument is function
-    done(null, (this.todos = clone(todos))
-    // done(err, data)
+// ex
+SomeStore.prototype.getDate = function (_data, callback) {
+    try {
+        var data = doSomething(_data)
+        callback(null, data)
+    } catch (err) {
+        callback(err)
+    }
 }
 ```
+
+### var setActionsFunc = require('flux-koime')
+
+var setActions  = require('flux-koime')
+var doPipe      = setActions(action1, action2, ...)
+var handleError = doPipe(store1, store2, ...)
+
+handleError(function (err) {
+    ...
+})
 
 ### author
 
