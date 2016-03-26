@@ -14,9 +14,15 @@ function Store (label, _opt, _role) {
     _role && mutable(this, _role)
 }
 
-Store.prototype._transform = function (payload, enc, done) {
+Store.prototype._transform = function (payload, enc, _done) {
+    var me   = this
     if (this.label === payload.label && 'function' === typeof this[payload.method])
         this[payload.method](payload.value, done)
     else
         done()
+
+    function done (err, data) {
+        if (err) me.emit('error', err)
+        _done(null, data)
+    }
 }
